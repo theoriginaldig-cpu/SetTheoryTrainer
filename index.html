@@ -99,6 +99,11 @@ i { font-style: italic; }
 .loading { text-align: center; color: var(--muted); padding: 28px 0; }
 
 /* working box */
+details.explain { align-self: center; max-width: 62ch; width: 100%; background: var(--tint); border-radius: 12px; padding: 0 16px; }
+details.explain summary { cursor: pointer; padding: 10px 0; font-weight: 600; color: var(--navy); font-size: 0.95rem; text-align: center; }
+details.explain summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+details.explain p { margin: 0 0 12px; }
+details.explain i { font-family: var(--f-logic); }
 details.work { border: 1px solid var(--tint); border-radius: 12px; padding: 0 14px; }
 details.work summary { cursor: pointer; padding: 10px 0; font-weight: 600; color: var(--navy); font-size: 0.95rem; }
 details.work summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
@@ -994,6 +999,8 @@ if (typeof module !== 'undefined') module.exports = SetRender;
       renderQuestion();
     }, 20);
   }
+  // the difference symbol only appears in set-notation questions (predicate questions write it as Fx ∧ ¬Gx)
+  const usesDif = q => q.style === 'set' && q.premises.concat([q.concl]).some(c => [c.s, c.t].some(t => t && t.t === 'dif'));
   function renderQuestion() {
     const q = state.q, R = state.R, pred = q.style === 'pred';
     const tags = [pred ? 'Predicates' : 'Set notation', val('level')[0].toUpperCase() + val('level').slice(1)];
@@ -1006,6 +1013,11 @@ if (typeof module !== 'undefined') module.exports = SetRender;
         <span class="lead">Does it follow that</span>
         <span class="concl">${R.claimH(q.concl)} ?</span>
       </div>
+      ${usesDif(q) ? `<details class="explain" id="difBox">
+        <summary>What does the symbol − mean?</summary>
+        <p><i>A</i> − <i>B</i> (read “<i>A</i> minus <i>B</i>”) is the <strong>difference</strong> of <i>A</i> and <i>B</i>: the set of things that are in <i>A</i> but not in <i>B</i>. So <i>x</i> ∈ <i>A</i> − <i>B</i> just when <i>x</i> ∈ <i>A</i> and <i>x</i> ∉ <i>B</i>.</p>
+        <p>For example, {1, 2, 3} − {2, 3, 4} = {1}. Note that <i>A</i> − <i>B</i> and <i>B</i> − <i>A</i> are usually different sets: here {2, 3, 4} − {1, 2, 3} = {4}.</p>
+      </details>` : ''}
       <details class="work" id="workBox">
         <summary>Your working</summary>
         <p class="hint">A space for rough work. It isn’t marked. Use the buttons to type symbols.</p>
